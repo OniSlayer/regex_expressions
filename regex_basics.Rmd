@@ -6,4 +6,137 @@ jupyter:
       format_name: rmarkdown
       format_version: '1.1'
       jupytext_version: 1.1.3
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
 ---
+
+```{python}
+# The "re" module contains funcitons related to regex
+import re
+```
+
+```{python}
+# Import pandas for using regex on dataframes
+import pandas as pd
+```
+
+```{python}
+# You can use the re.search function to see if a pattern has a match
+match_or_not = re.search("H[oq]", "Hola")
+print(match_or_not)
+```
+
+```{python}
+# If there is no match, the function will return None
+not_matched = re.search("Jo", "Holla")
+print(not_matched)
+```
+
+```{python}
+# Defining a helper function to return matches against a series
+
+def test_match(pattern, series):
+    boolean = series.str.contains(pattern)
+    return series[boolean]
+
+```
+
+```{python}
+# Sets are used to check if a character in an specific position is on a list of characters
+
+sets = pd.Series(["Hello", "Jallo", "fEllow"])
+
+test_match(r'[ea]l',sets)
+```
+
+```{python}
+# Sets can also be written as ranges
+# [0-9]
+# [a-z] (lower case letters from a to z)
+# [A-Z] (upper case letters)
+# [0-9a-zA-Z] (the combination of uppercase letters, lowercase letters and digits)
+
+
+sets2 = pd.Series(["1uno", "2dos", "tres"])
+
+test_match(r'[0-9]\w+', sets2)
+```
+
+```{python}
+# Shorthand notation for sets, also known as character classes are
+# \d for digits
+# \w for words
+# \s fro space, tabs and linebreaks
+# . for any character except newline
+
+sets3 = pd.Series(["1 uno", "2 dos", "tres"])
+
+# This regex match any word that has a number in the first position, a space on the second position and
+# a character on the third and following positions
+
+test_match(r'[\d][\s][\w]+', sets3)
+```
+
+```{python}
+# Quantifiers indicate the times a character or set can appear and are written in curved brackets
+quantifiers = pd.Series(['aalas', 'alaas', 'alas'])
+
+# This regex match any word that contains the letter a two times
+test_match(r'[a]{2}', quantifiers)
+```
+
+```{python}
+# Quantifiers also have a shorthand syntax
+
+quantifiers2 = pd.Series(["a space", "a     space", "aspace"])
+
+# a* to match the expression zero or more times
+# a+ to indicate that the expression can appear one or more times
+# a? to indicate that the expression can appear one or no times
+test_match(r'a\s+\w', quantifiers2)
+```
+
+```{python}
+# When using pandas, you can use str.extract and capture groups to get a part of a string
+capture_groups = pd.Series(["Phone 890430", "Lada 9803", "A pig", "Phone 890890"])
+
+# Capture groups are written using parenthesis
+extracted = capture_groups.str.extract(r'Phone ([\d]+)')
+extracted
+```
+
+```{python}
+# Negative characters indicate that a certain character in a given position can take any values except the ones specified
+# on the negative set. This sets are denoted with a carret
+
+negative_sets = pd.Series(["series a 789089049", "series b 8940380", "series a 23489083", "series c 89034890483"])
+
+
+# This regex match anything that don't have a b after the series
+test_match(r'series [^b]', negative_sets)
+```
+
+```{python}
+# Word boundaries happens at the end and beginning of a string or between word characters
+# They are dennoted with \b
+word_boundaries = pd.Series(["this is a a", "this is a c", "another c", " a coconut"])
+
+# This regex would match anything that has a c at the end of the line
+test_match(r'.+c\b', word_boundaries)
+```
+
+```{python}
+# Anchors, specially at the beginning and at the end are usefull to match expression that 
+# have a certain pattern in the beginning or in the end of the string
+
+# ^ is used as a beninning anchor
+# $ is used as an end anchor
+
+anchors = pd.Series(["Red at the beginning", "At the end Red"])
+
+print("At the beginning", test_match(r'^Red', anchors))
+
+print("At the end", test_match(r'Red$', anchors))
+```
